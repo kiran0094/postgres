@@ -4,6 +4,8 @@ const pgClient=new Client("postgresql://neondb_owner:npg_wr9RcQYz0uiv@ep-calm-le
 
  async function main(){
     await pgClient.connect();
+    const res=await pgClient.query("Select * from users");
+    console.log(res);
 
 }
 main();
