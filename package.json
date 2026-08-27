@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "dev":"tsc -b && nodemon dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -12,6 +13,7 @@
   "type": "module",
   "dependencies": {
     "@types/pg": "^8.23.1",
+    "nodemon": "^3.1.14",
     "pg": "^8.23.0"
   }
 }
