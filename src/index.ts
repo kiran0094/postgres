@@ -4,13 +4,10 @@ const pgClient=new Client("postgresql://neondb_owner:npg_wr9RcQYz0uiv@ep-calm-le
 
  async function main(){
     await pgClient.connect();
-    const res=await pgClient.query("Select * from users");
-  const ins = await pgClient.query(
-  `INSERT INTO users (username, email, password)
-   VALUES ('kiran094', 'kummkiran@gmail.com', 'kiran0094')`
-);
+    const res=await pgClient.query("update users set username='kiran' where id=1 ");
+ 
 
-    console.log(ins);
+    console.log(res);
 
 }
 main();
