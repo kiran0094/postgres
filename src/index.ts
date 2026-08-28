@@ -4,12 +4,24 @@ const pgClient=new Client("postgresql://neondb_owner:npg_wr9RcQYz0uiv@ep-calm-le
 
  async function main(){
     await pgClient.connect();
-    const res=await pgClient.query("update users set username='kiran' where id=1 ");
+    const user=await pgClient.query(`CREATE TABLE Users (
+    id INT PRIMARY KEY,
+    name VARCHAR(100)
+    ); `);
+
+    const orders=await pgClient.query(`CREATE TABLE Orders (
+    id INT PRIMARY KEY,
+    amount DECIMAL(10, 2),
+    user_id INT,
+    
+    FOREIGN KEY (user_id) REFERENCES Users(id)
+);`)
  
 
-    console.log(res);
+    console.log(orders);
 
 }
+main()
 
 
 
@@ -32,7 +44,7 @@ async function insertData(username: string, email: string, password: string) {
 }
 
 // Example usage
-insertData('username5', 'user5@example.com', 'user_password').catch(console.error);
+//insertData('username5', 'user5@example.com', 'user_password').catch(console.error);
 
 
 
