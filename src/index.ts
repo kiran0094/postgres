@@ -7,38 +7,54 @@ const app= express()
 app.use(express.json())
 
 
- async function main(){
+async function main(){
     await pgClient.connect();
-    const user=await pgClient.query(`CREATE TABLE Users (
-    id INT PRIMARY KEY,
-    name VARCHAR(100)
-    ); `);
+    const user=await pgClient.query(`CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+); `);
 
-    const orders=await pgClient.query(`CREATE TABLE Orders (
-    id INT PRIMARY KEY,
-    amount DECIMAL(10, 2),
+    const orders=await pgClient.query(`CREATE TABLE address (
+    city VARCHAR(30),
+    state VARCHAR(30),
+    country VARCHAR(30),
+    street VARCHAR(50),
+    pincode VARCHAR(6),
     user_id INT,
     
     FOREIGN KEY (user_id) REFERENCES Users(id)
 );`)
  
 
-    console.log(orders);
+    //console.log(orders);
 
 }
 main()
 
 app.post('/user',async(req,res)=>{
   try {
-   const {username,email,password}=req.body;
-    const insertQuery = "INSERT INTO users (username, email, password) VALUES ($1, $2, $3)";
+   const {username,email,password,city,state,country,street,pincode}=req.body;
+    const insertusers = "INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id";
     const values:string[] = [username, email, password];
-    const res = await pgClient.query(insertQuery, values);
-    console.log('Insertion success:', res); // Output insertion result
+    const insertuser = await pgClient.query(insertusers, values);
+    console.log('userinsert:', insertuser); // Output insertion result
+    const insertaddress="INSERT INTO address (city,state,country,street,pincode,user_id) VALUES($1,$2,$3,$4,$5,$6)"
+    const addvalues:string[]=[city,state,country,street,pincode,insertuser.rows[0].id]
+     const insertaddressres = await pgClient.query(insertaddress, addvalues);
+     res.json({
+      "status":200,
+      "messsage":'usersuccessfull created ',
+
+     })
   } catch (err) {
     console.error('Error during the insertion:', err);
   } 
 })
+
+
 
 app.listen(3000,()=>{
   console.log("app is lising on port 3000")
