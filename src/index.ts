@@ -38,14 +38,15 @@ app.post('/user',async(req,res)=>{
   try {
    const {username,email,password,city,state,country,street,pincode}=req.body;
    //trnascation 
-    await pgClient.query('BEGIN');
-
-    const insertusers = "INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id";
-    const values:string[] = [username, email, password];
+   
+   const insertusers = "INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id";
+   const values:string[] = [username, email, password];
+   const insertaddress="INSERT INTO address (city,state,country,street,pincode,user_id) VALUES($1,$2,$3,$4,$5,$6)"
+   
+   await pgClient.query('BEGIN');
     const insertuser = await pgClient.query(insertusers, values);
-    const insertaddress="INSERT INTO address (city,state,country,street,pincode,user_id) VALUES($1,$2,$3,$4,$5,$6)"
     const addvalues:string[]=[city,state,country,street,pincode,insertuser.rows[0].id]
-     const insertaddressres = await pgClient.query(insertaddress, addvalues);
+    const insertaddressres = await pgClient.query(insertaddress, addvalues);
      await pgClient.query("COMMIT");
      res.json({
       "status":200,
