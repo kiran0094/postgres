@@ -6,10 +6,12 @@ const app= express()
 
 app.use(express.json())
 
+await pgClient.connect();
+
 
 async function main(){
-    await pgClient.connect();
-    const user=await pgClient.query(`CREATE TABLE users (
+  
+   const user=await pgClient.query(`CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -32,7 +34,7 @@ async function main(){
     //console.log(orders);
 
 }
-main()
+//main()
 
 app.post('/user',async(req,res)=>{
   try {
@@ -45,7 +47,7 @@ app.post('/user',async(req,res)=>{
    
    await pgClient.query('BEGIN');
     const insertuser = await pgClient.query(insertusers, values);
-    const addvalues:string[]=[city,state,country,street,pincode,insertuser.rows[0].id]
+    const addvalues:string[]=[city,state,country,street,pincode,insertuser.rows[0].id]   
     const insertaddressres = await pgClient.query(insertaddress, addvalues);
      await pgClient.query("COMMIT");
      res.json({
@@ -56,6 +58,21 @@ app.post('/user',async(req,res)=>{
   } catch (err) {
     console.error('Error during the insertion:', err);
   } 
+})
+
+app.get("/metadata",async(req,res)=>{
+
+  const query=await pgClient.query(`SELECT users.id, users.username, users.email, address.city, address.country, address.street, address.pincode
+                         FROM users
+                         JOIN address ON users.id = address.user_id
+                         WHERE users.id = $1;`,[1]);
+  console.log(query);
+  res.json({
+    data:query
+  })
+
+
+
 })
 
 
