@@ -61,6 +61,15 @@ app.post('/user',async(req,res)=>{
 })
 
 app.get("/metadata",async(req,res)=>{
+  /*
+  JOIN are 4 types
+  inner joins and full joins: "if have entry in two table then we see the entry "
+  left join : we all entry in left table and realted rigth table entrys
+  rigth join: we all entry in rigth table and realted left table entrys
+  outerjoin :we all data of left and rigth even if it entered in any one table;
+  
+  
+  */
 
   const query=await pgClient.query(`SELECT users.id, users.username, users.email, address.city, address.country, address.street, address.pincode
                          FROM users
